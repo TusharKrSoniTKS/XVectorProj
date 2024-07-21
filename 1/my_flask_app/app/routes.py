@@ -4,7 +4,6 @@ import pandas as pd
 import os
 from app import db
 from sqlalchemy.sql import text
-import json
 
 main = Blueprint('main', __name__)
 UPLOAD_FOLDER = 'uploads'
@@ -25,13 +24,21 @@ def index():
     table_data = {}
     for table in tables:
         with db.engine.connect() as connection:
-            query = f'SELECT * FROM "{table}" LIMIT 10'
+            # Get number of rows
+            query = f'SELECT COUNT(*) FROM "{table}"'
             result = connection.execute(text(query))
-            columns = list(result.keys())  # Convert RMKeyView to a list
-            rows = [list(row) for row in result]
+            num_rows = result.scalar()
+
+            # Get number of columns
+            query = f'SELECT * FROM "{table}" LIMIT 1'
+            result = connection.execute(text(query))
+            columns = list(result.keys())
+            num_columns = len(columns)
+
             table_data[table] = {
-                'columns': columns,
-                'rows': rows
+                'num_rows': num_rows,
+                'num_columns': num_columns,
+                'columns': columns
             }
     
     return render_template('index.html', tables=tables, table_data=table_data)
