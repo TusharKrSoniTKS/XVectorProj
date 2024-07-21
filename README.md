@@ -63,6 +63,7 @@ Install dependencies using pip:
 ```sh
 pip install Flask psycopg2-binary pandas
 pip install SQLAlchemy
+pip install postgres
 ```
 
 ### 5. Run the Application
