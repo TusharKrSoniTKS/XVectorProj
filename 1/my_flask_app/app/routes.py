@@ -17,7 +17,24 @@ def allowed_file(filename):
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    tables = []
+    with db.engine.connect() as connection:
+        result = connection.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema='public'"))
+        tables = [row[0] for row in result]
+    
+    table_data = {}
+    for table in tables:
+        with db.engine.connect() as connection:
+            query = f'SELECT * FROM "{table}" LIMIT 10'
+            result = connection.execute(text(query))
+            columns = list(result.keys())  # Convert RMKeyView to a list
+            rows = [list(row) for row in result]
+            table_data[table] = {
+                'columns': columns,
+                'rows': rows
+            }
+    
+    return render_template('index.html', tables=tables, table_data=table_data)
 
 @main.route('/data', methods=['GET', 'POST'])
 def data():
@@ -60,6 +77,20 @@ def get_columns():
             result = connection.execute(text(f"SELECT column_name FROM information_schema.columns WHERE table_name = :table_name"), {'table_name': table_name})
             columns = [row[0] for row in result]
     return jsonify(columns)
+
+@main.route('/plot_data', methods=['POST'])
+def plot_data():
+    data_name = request.form.get('data_name')
+    column1 = request.form.get('column1')
+    column2 = request.form.get('column2')
+    
+    if data_name and column1 and column2:
+        with db.engine.connect() as connection:
+            result = connection.execute(text(f'SELECT "{column1}", "{column2}" FROM "{data_name}" LIMIT 25'))
+            data = [{"x": row[0], "y": row[1]} for row in result]
+        return jsonify({'data': data, 'column1': column1, 'column2': column2, 'data_name': data_name})
+    
+    return jsonify({'error': 'Invalid request'}), 400
 
 @main.route('/plots', methods=['GET', 'POST'])
 def plots():

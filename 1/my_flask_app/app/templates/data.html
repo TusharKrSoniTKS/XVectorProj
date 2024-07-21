@@ -25,4 +25,13 @@
         {% endfor %}
     </ul>
 </div>
+
+<script>
+    document.getElementById('csvFile').addEventListener('change', function() {
+        var fileName = this.files[0].name;
+        var nextSibling = this.nextElementSibling;
+        nextSibling.innerText = fileName;
+    });
+</script>
+
 {% endblock %}
