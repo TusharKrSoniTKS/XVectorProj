@@ -110,3 +110,11 @@ flask-data-visualization-app/
 ├── run.py
 └── README.md
 ```
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+### Apache License 2.0
+
+
