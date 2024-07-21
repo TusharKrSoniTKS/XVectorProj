@@ -1,0 +1,94 @@
+/* General body styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* Navigation bar styles */
+nav {
+    background-color: #333;
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    transition: color 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #ff6347; /* Tomato color on hover */
+}
+
+/* Content styles */
+.content {
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+p {
+    font-size: 16px;
+    color: #666;
+}
+
+/* File upload styles */
+.upload-section {
+    margin-top: 30px;
+}
+
+.upload-section h2 {
+    font-size: 22px;
+    color: #333;
+}
+
+.custom-file-label::after {
+    content: "Browse";
+}
+
+/* Bootstrap form overrides */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.btn {
+    width: 100%;
+}
+
+/* Existing tables styles */
+.existing-tables h2 {
+    font-size: 22px;
+    color: #333;
+}
+
+.list-group-item {
+    font-size: 18px;
+    color: #333;
+}

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Plots Page</h1>
+<p>Perform operations and plot data from the database.</p>
+
+<div class="calculation-section">
+    <h2>Calculate</h2>
+    <form id="calcForm">
+        <div class="form-group">
+            <label for="dataName">Data Name</label>
+            <select class="form-control" id="dataName" name="data_name" required onchange="fetchColumns('dataName', 'columnName')">
+                <option value="">Select Data Name</option>
+                {% for table_name in table_names %}
+                    <option value="{{ table_name }}">{{ table_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="columnName">Column Name</label>
+            <select class="form-control" id="columnName" name="column_name" required>
+                <option value="">Select Column Name</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="operation">Operation</label>
+            <select class="form-control" id="operation" name="operation" required>
+                <option value="min">Min</option>
+                <option value="max">Max</option>
+                <option value="sum">Sum</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Calculate</button>
+    </form>
+
+    <div id="calcResult" class="result mt-3" style="display: none;">
+        <h3>Result</h3>
+        <p id="calcResultText"></p>
+    </div>
+</div>
+
+<div class="plot-section mt-5">
+    <h2>Plot Data</h2>
+    <form id="plotForm">
+        <div class="form-group">
+            <label for="dataNamePlot">Data Name</label>
+            <select class="form-control" id="dataNamePlot" name="data_name" required onchange="fetchColumns('dataNamePlot', 'column1', 'column2')">
+                <option value="">Select Data Name</option>
+                {% for table_name in table_names %}
+                    <option value="{{ table_name }}">{{ table_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="column1">Column 1</label>
+            <select class="form-control" id="column1" name="column1" required>
+                <option value="">Select Column 1</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="column2">Column 2</label>
+            <select class="form-control" id="column2" name="column2" required>
+                <option value="">Select Column 2</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Plot</button>
+    </form>
+
+    <div id="plot" class="mt-3" style="display: none;"></div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    function fetchColumns(tableSelectId, ...columnSelectIds) {
+        const tableName = document.getElementById(tableSelectId).value;
+        if (tableName) {
+            fetch(`/get_columns?table_name=${tableName}`)
+                .then(response => response.json())
+                .then(columns => {
+                    columnSelectIds.forEach(columnSelectId => {
+                        const columnSelect = document.getElementById(columnSelectId);
+                        columnSelect.innerHTML = '<option value="">Select Column</option>';
+                        columns.forEach(column => {
+                            const option = document.createElement('option');
+                            option.value = column;
+                            option.textContent = column;
+                            columnSelect.appendChild(option);
+                        });
+                    });
+                });
+        } else {
+            columnSelectIds.forEach(columnSelectId => {
+                const columnSelect = document.getElementById(columnSelectId);
+                columnSelect.innerHTML = '<option value="">Select Column</option>';
+            });
+        }
+    }
+
+    document.getElementById('calcForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('/plots', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            document.getElementById('calcResult').style.display = 'block';
+            document.getElementById('calcResultText').textContent = `${result.operation} value of ${result.column_name} in ${result.data_name} is: ${result.value}`;
+        });
+    });
+
+    document.getElementById('plotForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch('/plots', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(result => {
+            document.getElementById('plot').style.display = 'block';
+            var data = result.data;
+            var trace = {
+                x: data.map(d => d.x),
+                y: data.map(d => d.y),
+                mode: 'lines+markers',
+                type: 'scatter'
+            };
+            var layout = {
+                title: `Plot of ${result.column1} vs ${result.column2}`,
+                xaxis: {
+                    title: result.column1
+                },
+                yaxis: {
+                    title: result.column2
+                }
+            };
+            Plotly.newPlot('plot', [trace], layout);
+        });
+    });
+</script>
+
+{% endblock %}
