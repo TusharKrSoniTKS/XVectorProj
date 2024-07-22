@@ -32,10 +32,6 @@ Clone the repository to your local machine using the following command:
 
 ```sh
 git clone https://github.com/TusharKrSoniTKS/XVectorProj.git
-cd 1
-source venv/bin/activate
-cd my_flask_app
-python run.py
 ```
 
 ### 2. Setup PostgreSQL
@@ -73,6 +69,9 @@ pip install postgres
 Run the application using the following command:
 
 ```sh
+cd 1
+source venv/bin/activate
+cd my_flask_app
 python run.py
 ```
 
